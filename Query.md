@@ -182,7 +182,32 @@ Theta Join: $r\Join_\theta s$
   * **Disjunction** $\sigma_{\theta_1 \or\theta_2 \or\ldots \or\theta_n}(r)$: $c=n_{r} *\left(1-\left(1-\frac{s_{1}}{n_{r}}\right) *\left(1-\frac{s_{2}}{n_{r}}\right) * \ldots *\left(1-\frac{s_{n}}{n_{r}}\right)\right)$
   * **Negation** $\sigma_{^\neg \theta}(r)$: $c= n_r-\#\sigma_\theta(r)$
 
-* 
+* **Estimation of Size of Joins**
 
+  * $r\times s$ (Cartesian product) contains $n_rn_s$ tuples, each $s_r+s_s$ bytes
+  * If $R\cap S=\varnothing$, then $r\Join s=r\times s$
+  * If $R\cap S$ is key for $R$, then a tuple of $s$ will join at most once, thus 
+    $n_{r\Join s} \leq n_s$
+    * If $R\cap S$ is a foreign key in $S$ referencing $R$, then $n_{r\Join s} = n_s$
+  * If $R\cap S=A$ not a key for $R$ or $S$
+    * If every tuple *r* produces tuples in $r\Join s$, then estimate = $\frac{n_{r} * n_{s}}{V(A, s)}$
+    * Reverse, estimate = $\frac{n_{r} * n_{s}}{V(A, r)}$
+    * Sum up: $\min(\frac{n_{r} * n_{s}}{V(A, s)},\frac{n_{r} * n_{s}}{V(A, r)})$
+  
+* **Estimation of Distinct Values**: 
+
+  * Selection: $V\left(A, \sigma_{\theta}(r)\right)$
+    * If $\theta$ forces *A* to take a specified value (e.g. $\theta=\{A=3\}$), then $V\left(A, \sigma_{\theta}(r)\right)=1$
+    * If $\theta$ forces *A* to take a specified set of value (e.g. $\theta=\{A=3\or A=4\or A=5\}$), then $V\left(A, \sigma_{\theta}(r)\right)=$ number of the set
+    * If $\theta$ is *A op r*, then $V\left(A, \sigma_{\theta}(r)\right)=V(A,r)*s$, where *s* is the selectivity of the selection
+    * Other cases: $V\left(A, \sigma_{\theta}(r)\right)=\min(V(A,r),n_{\sigma_\theta(r)})$
+  * Projection: $V(A,\Pi_A(r))=V(A,r)$
+  * Aggregation
+    * $\min$ and $\max$: estimated $\min(V(A,r),V(G,r))$, where $G$ is group attributes
+    * Other: assume values distinct, use $V(G,r)$
+
+* **Left Deep Join Trees**
+
+* **Heuristic Optimization**
 
 
